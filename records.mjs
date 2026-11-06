@@ -14,6 +14,7 @@ export function reportFromSession(
     patient: session.patient.name,
     createdAt,
     protocol: session.protocol.title,
+    reportSections: session.protocol.reportSections || [],
     text: session.draft,
     coverage: coverage(session.protocol, session.result.answers),
     answers: session.result.answers,

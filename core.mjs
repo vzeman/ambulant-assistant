@@ -1,3 +1,4 @@
+import { reportStyle } from "./report-style.mjs";
 import { slovakStyle } from "./slovak-style.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { existsSync, realpathSync } from "node:fs";
@@ -219,6 +220,7 @@ answers obsahuje kumulatívne iba skutočne zodpovedané otázky. Každá správ
 urgent=true len pri vyjadrení aktuálneho závažného varovného príznaku alebo možnom bezprostrednom ohrození; reply vtedy musí povedať pacientovi, aby okamžite privolal zdravotnícky personál a pri bezprostrednom ohrození volal 155 alebo 112. Neodkladaj pomoc ďalšími otázkami.
 choices sú vhodné krátke možnosti odpovede na práve položenú otázku; pacient môže vždy písať vlastný text. Pri kompletne zodpovedanom protokole poďakuj a povedz: Ak chcete pripraviť záznam, povedzte alebo zvoľte „Pripraviť záznam“. choices vtedy obsahuje iba „Pripraviť záznam“. Nepýtaj sa na prípravu otázkou áno/nie.
 ${finalize ? "Pacient teraz dobrovoľne ukončuje rozhovor. TERAZ VYTVOR ZÁVEREČNÝ ODBORNÝ PROTOKOL v report aj vtedy, keď neodpovedal na všetky otázky alebo ešte neposkytol žiadnu odpoveď. Už neklad žiadnu ďalšiu otázku a nežiadaj dokončenie dotazníka. Použi iba doterajšie údaje; nezodpovedané okruhy jasne označ ako nezistené. Ak chýbajú odpovede, uveď, že ide o neúplný rozhovor ukončený pacientom. reply stručne oznámi jeho prípravu. report je slovenský odborný text podľa reportSections; uveď zdroj (pacient vs historická dokumentácia), presne zachovaj neistoty a odmietnuté či chýbajúce odpovede. Nevymýšľaj vitálne funkcie, vyšetrenie, diagnózu, negatívny nález ani liečebný plán. Historické lieky označ ako neoverené, pokiaľ ich pacient nepotvrdil. Záver je návrh na kontrolu lekárom." : "report musí byť prázdny reťazec. Pokračuj otázkou na ďalšiu chýbajúcu časť protokolu."}
+${finalize ? reportStyle : ""}
 ${repairReason ? "OPRAVA VÝSTUPU: Predchádzajúca odpoveď neprešla kontrolou (" + repairReason + "). Vráť celý výsledný JSON znova. Použi iba platné ID otázok, bez duplicít, a sourceMessageId presne z niektorej správy pacienta v dátach." : ""}
 DÁTA:\n${JSON.stringify({ patient, protocol, messages: messages.map((m, i) => (m.role === "user" ? { ...m, sourceMessageId: `u${i}` } : m)) })}`;
   // Saved ChatGPT login is reused, but global MCP servers, plugins and tools are not loaded.

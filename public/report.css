@@ -1,0 +1,94 @@
+.clinical-report {
+  font:
+    15px/1.7 -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color: #263d36;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.report-section {
+  padding: 20px 0;
+  border-bottom: 1px solid #e2e8e1;
+  break-inside: avoid;
+}
+.report-section:last-child {
+  border-bottom: 0;
+}
+.report-section h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: #174f49;
+  font-weight: 750;
+  line-height: 1.45;
+}
+.report-section p {
+  margin: 0 0 10px;
+}
+.report-section p:last-child {
+  margin-bottom: 0;
+}
+.report-section ul {
+  margin: 8px 0;
+  padding-left: 22px;
+}
+.report-section li {
+  margin: 7px 0;
+}
+.clinical-report strong {
+  font-weight: 750;
+  color: #173e35;
+}
+.clinical-report u {
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+.report-section--overview {
+  background: #edf4ed;
+  border: 1px solid #d3e3d1;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 8px;
+}
+.report-section--verify {
+  background: #fbf7e9;
+  border-left: 3px solid #cda757;
+  padding: 18px 20px;
+  margin-top: 16px;
+  border-radius: 0 10px 10px 0;
+}
+.report-section--partial {
+  font-size: 13px;
+  background: #f4f5ef;
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+.report-alert {
+  background: #fff0ed;
+  border: 1px solid #e3a89e;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+  color: #7e3129;
+}
+@media print {
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .report-document {
+    max-width: none !important;
+  }
+  .report-section {
+    padding: 12px 0;
+  }
+  .report-section--overview,
+  .report-section--verify,
+  .report-section--partial {
+    padding: 14px !important;
+    print-color-adjust: exact;
+  }
+}

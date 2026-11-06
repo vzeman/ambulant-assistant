@@ -100,6 +100,7 @@ function view(s) {
     urgent: s.result.urgent,
     coverage: coverage(s.protocol, s.result.answers),
     report: s.draft || null,
+    reportSections: s.protocol.reportSections,
     saved: s.saved || false,
   };
 }
@@ -313,6 +314,8 @@ const server = http.createServer(async (req, res) => {
       "/": "index.html",
       "/app.js": "app.js",
       "/slovak-voice.js": "slovak-voice.js",
+      "/report-format.js": "report-format.js",
+      "/report.css": "report.css",
       "/style.css": "style.css",
     };
     if (req.method === "GET" && staticFiles[route]) {

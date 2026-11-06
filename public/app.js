@@ -1,3 +1,4 @@
+import { renderReport, plainReport, reportDocument } from "./report-format.js";
 import { loadSlovakVoice } from "./slovak-voice.js";
 
 const $ = (s) => document.querySelector(s),
@@ -244,7 +245,7 @@ async function prepare() {
 function review() {
   app.innerHTML =
     header() +
-    `<main class="layout">${sidebar(3)}<section class="card review"><div class="eyebrow">ZÁZNAM Z ROZHOVORU</div><h2>Všetko podstatné<br>na jednom mieste.</h2><div class="notice">${state.coverage.missing.length ? "<strong>Rozhovor ste ukončili pred zodpovedaním všetkých otázok.</strong><br>Správa obsahuje doterajšie odpovede a zoznam chýbajúcich údajov.<br><br>" : ""}Návrh vytvorený AI. Odbornú správnosť a úplnosť musí skontrolovať lekár. ${state.coverage.missing.length ? `<br><strong>Nezodpovedané okruhy:</strong> ${esc(state.coverage.missing.join("; "))}` : ""}</div><div class="report">${esc(state.report)}</div><div class="actions"><button class="primary" id="confirm">Potvrdiť a uložiť na disk →</button><button class="secondary" id="back">Doplniť odpovede</button><button class="secondary" id="mic" aria-label="Hlasové potvrdenie záznamu">◉ Hlasový príkaz</button></div><p class="fine">Hlasom povedzte „uložiť záznam“ alebo „doplniť odpovede“.</p><p class="fine">Záznam sa neodosiela e-mailom. Bude dostupný lekárovi po zadaní PIN-u.</p></section></main>` +
+    `<main class="layout">${sidebar(3)}<section class="card review"><div class="eyebrow">ZÁZNAM Z ROZHOVORU</div><h2>Všetko podstatné<br>na jednom mieste.</h2><div class="notice">${state.coverage.missing.length ? "<strong>Rozhovor ste ukončili pred zodpovedaním všetkých otázok.</strong><br>Správa obsahuje doterajšie odpovede a zoznam chýbajúcich údajov.<br><br>" : ""}Návrh vytvorený AI. Odbornú správnosť a úplnosť musí skontrolovať lekár. </div><div class="report">${renderReport(state.report, { reportSections: state.reportSections, missing: state.coverage.missing, urgent: state.urgent })}</div><div class="actions"><button class="primary" id="confirm">Potvrdiť a uložiť na disk →</button><button class="secondary" id="back">Doplniť odpovede</button><button class="secondary" id="mic" aria-label="Hlasové potvrdenie záznamu">◉ Hlasový príkaz</button></div><p class="fine">Hlasom povedzte „uložiť záznam“ alebo „doplniť odpovede“.</p><p class="fine">Záznam sa neodosiela e-mailom. Bude dostupný lekárovi po zadaní PIN-u.</p></section></main>` +
     footer();
   bindHeader();
   $("#back").onclick = () => {
@@ -411,7 +412,7 @@ function renderAdmin() {
         : adminData.reports
             .map(
               (r, i) =>
-                `<details class="record"><summary>${esc(r.patient)} · ${esc(new Date(r.createdAt).toLocaleString("sk-SK"))}${r.urgent ? " · ⚠ VÝSTRAHA" : ""} · ${r.patientConfirmed ? "Potvrdené pacientom" : "Čaká na potvrdenie pacienta"}</summary><small>${r.patientConfirmed ? "POTVRDENÉ PACIENTOM" : "ČAKÁ NA POTVRDENIE PACIENTA"} · ${esc(r.protocol)} · ${r.coverage.answered}/${r.coverage.total} okruhov · NEOVERENÉ LEKÁROM</small><div class="report">${esc(r.text)}</div>${r.coverage.missing.length ? `<p class="error">Chýba: ${esc(r.coverage.missing.join("; "))}</p>` : ""}<details><summary>Citácie odpovedí pacienta</summary>${r.answers.map((a) => `<p><strong>${esc(a.id)}</strong>: ${esc(a.value)} — „${esc(a.evidence)}“</p>`).join("")}</details><div class="actions"><button class="secondary" data-export="${i}">Stiahnuť text</button><button class="secondary" data-copy="${i}">Kopírovať protokol</button></div></details>`,
+                `<details class="record"><summary>${esc(r.patient)} · ${esc(new Date(r.createdAt).toLocaleString("sk-SK"))}${r.urgent ? " · ⚠ VÝSTRAHA" : ""} · ${r.patientConfirmed ? "Potvrdené pacientom" : "Čaká na potvrdenie pacienta"}</summary><small>${r.patientConfirmed ? "POTVRDENÉ PACIENTOM" : "ČAKÁ NA POTVRDENIE PACIENTA"} · ${esc(r.protocol)} · ${r.coverage.answered}/${r.coverage.total} okruhov · NEOVERENÉ LEKÁROM</small><div class="report">${renderReport(r.text, { reportSections: r.reportSections, missing: r.coverage.missing, urgent: r.urgent })}</div><details><summary>Citácie odpovedí pacienta</summary>${r.answers.map((a) => `<p><strong>${esc(a.id)}</strong>: ${esc(a.value)} — „${esc(a.evidence)}“</p>`).join("")}</details><div class="actions"><button class="secondary" data-html="${i}">Stiahnuť formátovanú správu</button><button class="secondary" data-export="${i}">Stiahnuť text</button><button class="secondary" data-copy="${i}">Kopírovať protokol</button></div></details>`,
             )
             .join(""));
     $("#refresh-reports").onclick = async () => {
@@ -421,6 +422,19 @@ function renderAdmin() {
         toast(e.message);
       }
     };
+    document.querySelectorAll("[data-html]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          const r = adminData.reports[b.dataset.html];
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(
+            new Blob([reportDocument(r)], { type: "text/html;charset=utf-8" }),
+          );
+          a.download = `ambulant-${r.id}.html`;
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        }),
+    );
     document.querySelectorAll("[data-export]").forEach(
       (b) =>
         (b.onclick = () => {
@@ -437,15 +451,32 @@ function renderAdmin() {
     );
     document.querySelectorAll("[data-copy]").forEach(
       (b) =>
-        (b.onclick = () =>
-          navigator.clipboard
-            .writeText(reportText(adminData.reports[b.dataset.copy]))
-            .then(() => toast("Protokol skopírovaný."))
-            .catch(() =>
-              toast(
-                "Prehliadač nepovolil kopírovanie. Použite stiahnutie textu.",
-              ),
-            )),
+        (b.onclick = async () => {
+          const r = adminData.reports[b.dataset.copy];
+          try {
+            if (navigator.clipboard.write && window.ClipboardItem) {
+              try {
+                await navigator.clipboard.write([
+                  new ClipboardItem({
+                    "text/html": new Blob([reportDocument(r)], {
+                      type: "text/html",
+                    }),
+                    "text/plain": new Blob([reportText(r)], {
+                      type: "text/plain",
+                    }),
+                  }),
+                ]);
+              } catch {
+                await navigator.clipboard.writeText(reportText(r));
+              }
+            } else await navigator.clipboard.writeText(reportText(r));
+            toast("Protokol skopírovaný.");
+          } catch {
+            toast(
+              "Prehliadač nepovolil kopírovanie. Použite stiahnutie správy.",
+            );
+          }
+        }),
     );
   }
   if (tab === "protocol") protocolEditor(p);
@@ -466,7 +497,7 @@ function renderAdmin() {
   }
 }
 function reportText(r) {
-  return `AMBULANT — NÁVRH AI NA KONTROLU LEKÁROM\n${r.patientConfirmed ? "Potvrdené pacientom" : "Čaká na potvrdenie pacienta"}\n${r.patient}\n${r.createdAt}\n${r.protocol}\n\n${r.text}\n\nNezodpovedané okruhy: ${r.coverage.missing.join("; ") || "žiadne"}\n`;
+  return `AMBULANT — NÁVRH AI NA KONTROLU LEKÁROM\n${r.patientConfirmed ? "Potvrdené pacientom" : "Čaká na potvrdenie pacienta"}\n${r.patient}\n${r.createdAt}\n${r.protocol}\n\n${plainReport(r.text)}\n\nNezodpovedané okruhy: ${r.coverage.missing.join("; ") || "žiadne"}\n`;
 }
 function protocolEditor(panel) {
   const p = adminData.protocol;

@@ -467,7 +467,7 @@ p {
   border-radius: 12px;
 }
 .report {
-  white-space: pre-wrap;
+  white-space: normal;
   line-height: 1.8;
   font-size: 14px;
   background: #fafbf7;

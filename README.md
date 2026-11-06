@@ -67,3 +67,7 @@ Klinická validácia protokolu, produkčné riadenie zdravotných údajov a súh
 ## Slovenčina
 
 `slovak-style.mjs` definuje jazyk pre každý AI krok vrátane existujúcich rozhovorov: prirodzená spisovná slovenčina, jednoduché otázky po jednej, primerané vykanie, ukážky formulácií a jazyková kontrola pred odpoveďou. Záznam pre lekára používa odborný register. Jazyková úprava nesmie meniť medicínsky význam ani doslovné citácie pacienta. [Odporúčania k pokynom a príkladom](https://developers.openai.com/api/docs/guides/prompt-engineering).
+
+## Formát lekárskej správy
+
+Nové správy obsahujú stručný prehľad, nadpisy sekcií a odrážky. Dôležité celé tvrdenia sú tučné (`**...**`), údaje na overenie podčiarknuté (`__...__`). Negácie, dávky a neistoty sa zachovávajú. `public/report-format.js` vykresľuje iba bezpečnú podmnožinu formátovania; ľubovoľné HTML z odpovedí sa nevykonáva. Staršie čisté texty sa členia do sekcií bez opätovného volania AI. V lekárskej časti možno správu stiahnuť ako samostatné formátované HTML vhodné na tlač alebo uloženie do PDF cez prehliadač, ako obyčajný text, prípadne kopírovať s formátovaním do podporovaného editora. Pri nepodporovanej HTML schránke sa kopíruje čistý text.
