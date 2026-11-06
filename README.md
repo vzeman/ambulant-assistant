@@ -23,7 +23,7 @@ Lokálne slovenské MVP asistenta pred návštevou ambulantného špecialistu. P
 - Hlasové príkazy „Pripraviť záznam“, v náhľade „Uložiť záznam“ alebo „Doplniť odpovede“ umožnia dokončiť rozhovor aj bez písania.
 - Rozhovor môžete kedykoľvek ukončiť výrazným tlačidlom „Ukončiť rozhovor a pripraviť správu“ alebo rovnakým hlasovým príkazom. Netreba odpovedať na všetky otázky. Prípadná neodoslaná odpoveď v textovom poli sa zahrnie do správy. Neúplný rozhovor je označený a správa obsahuje zoznam nezodpovedaných okruhov.
 - Ukončite rozhovor a pripravte záznam. Prečítajte si náhľad, prípadne doplňte odpovede a potvrďte uloženie.
-- Lekár po zadaní PIN-u nájde text v Záznamoch; môže ho skopírovať alebo stiahnuť ako `.txt`. E-mail sa v tomto MVP neodosiela.
+- Lekár po zadaní PIN-u ihneď uvidí Záznamy. Sú tam potvrdené protokoly aj už vygenerované správy označené „Čaká na potvrdenie pacienta“. Načítajú sa aj staršie návrhy uložené pri rozhovoroch. Zoznam sa obnoví pri otvorení záložky, návrate do okna alebo tlačidlom „Obnoviť správy“. Text môže skopírovať alebo stiahnuť ako `.txt`. E-mail sa v tomto MVP neodosiela.
 
 ## Kde sú dáta
 
@@ -36,7 +36,7 @@ Pri prvom spustení sa vytvorí ignorovaný adresár `data/` s oprávneniami 070
 - `config.json` – hash PIN-u; `FIRST-RUN-PIN.txt` obsahuje počiatočný PIN do jeho prvej zmeny.
 - `runtime/` – schéma odpovede pre Codex; neobsahuje API kľúč.
 
-**Do GitHubu patria iba zdrojové súbory a jasne označené fiktívne príklady v `examples/`. Adresár `data/` nikdy necommitujte.** Lokálne súbory nie sú šifrované aplikáciou. Prehliadač má iba nepriehľadné HttpOnly cookies; lekárska časť sa overuje na serveri. PIN nie je náhradou za systémový kiosk režim. Po odchode od zariadenia uzamknite pracovisko. Lekárska relácia má limit 30 minút, pacientská dve hodiny. Obnovenie stránky pokračuje v rovnakej relácii, pokiaľ beží server; po reštarte servera sú rozpracované relácie len na disku a nový rozhovor sa začína odznova. Potvrdené záznamy zostávajú dostupné.
+**Do GitHubu patria iba zdrojové súbory a jasne označené fiktívne príklady v `examples/`. Adresár `data/` nikdy necommitujte.** Lokálne súbory nie sú šifrované aplikáciou. Prehliadač má iba nepriehľadné HttpOnly cookies; lekárska časť sa overuje na serveri. PIN nie je náhradou za systémový kiosk režim. Po odchode od zariadenia uzamknite pracovisko. Lekárska relácia má limit 30 minút, pacientská dve hodiny. Obnovenie stránky pokračuje v rovnakej relácii, pokiaľ beží server; po reštarte servera sú rozpracované relácie len na disku a nový rozhovor sa začína odznova. Potvrdené záznamy aj už vygenerované návrhy zostávajú dostupné lekárovi po prihlásení.
 
 ## AI a súkromie
 
@@ -58,7 +58,7 @@ npm start
 
 Premenné `PORT` (predvolene 4317), `CODEX_BIN` (predvolene `codex`) a voliteľne `CODEX_MODEL` umožnia lokálnu konfiguráciu. Kód je bez externých runtime závislostí. Pri viacerých inštaláciách Codexu adaptér automaticky vyberie kompatibilnú verziu z Node/NVM alebo PATH; explicitná cesta má prednosť cez CODEX_BIN. Testy overujú vetvenie, validáciu protokolu, priradenie odpovedí k doslovným citáciám pacienta a HTTP ochranu lekárskeho prístupu, pôvodu požiadaviek a uloženia protokolu. HTTP test používa samostatný dočasný adresár, nie vaše lokálne záznamy.
 
-Architektúra: `server.mjs` (HTTP, relácie, autorizácia, disk), `core.mjs` (Codex adaptér, schéma, validácia), `public/` (responzívny klient), `examples/` (fiktívne dáta). Názvy okruhov a odborné sekcie sú definované v protokole; žiadny email ani analytika sa neposielajú na pozadí.
+Architektúra: `server.mjs` (HTTP, relácie, autorizácia, disk), `core.mjs` (Codex adaptér, schéma, validácia), `records.mjs` (zjednotený zoznam návrhov a potvrdených protokolov), `public/` (responzívny klient), `examples/` (fiktívne dáta). Názvy okruhov a odborné sekcie sú definované v protokole; žiadny email ani analytika sa neposielajú na pozadí.
 
 ## Ďalšie kroky
 

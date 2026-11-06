@@ -146,6 +146,18 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
         setTimeout(() => reject(Error("startup timeout")), 5000).unref(),
       ),
     ]);
+    const pin = (
+      await readFile(path.join(dir, "FIRST-RUN-PIN.txt"), "utf8")
+    ).trim();
+    const login = await request("/api/login", { pin });
+    const adminCookie = login.headers.get("set-cookie").split(";")[0];
+    const doctorReports = async () => {
+      const response = await fetch(base + "/api/admin", {
+        headers: { Cookie: adminCookie },
+      });
+      assert.equal(response.status, 200);
+      return (await response.json()).reports;
+    };
     for (const text of [undefined, "Som tu na pravidelnej kontrole."]) {
       const start = await request("/api/start", { consent: true });
       assert.equal(start.status, 200);
@@ -171,7 +183,18 @@ console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',tex
         );
       else
         assert.equal(draft.messages.filter((m) => m.role === "user").length, 0);
+      let visible = (await doctorReports()).filter((r) => r.id === draft.id);
+      assert.equal(visible.length, 1);
+      assert.equal(visible[0].text, draft.report);
+      assert.equal(visible[0].patientConfirmed, false);
       assert.equal((await request("/api/confirm", {}, cookie)).status, 200);
+      visible = (await doctorReports()).filter((r) => r.id === draft.id);
+      assert.equal(visible.length, 1);
+      assert.equal(visible[0].patientConfirmed, true);
+      const sessionOnDisk = JSON.parse(
+        await readFile(path.join(dir, "sessions", draft.id + ".json")),
+      );
+      assert.equal(sessionOnDisk.saved, true);
       const saved = JSON.parse(
         await readFile(path.join(dir, "reports", draft.id + ".json")),
       );

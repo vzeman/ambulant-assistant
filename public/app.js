@@ -18,7 +18,7 @@ let state = null,
   recognition = null,
   listening = false,
   adminData = null,
-  tab = "history",
+  tab = "reports",
   speaking = false,
   voiceRevision = 0;
 const SpeechRecognition =
@@ -387,9 +387,15 @@ function renderAdmin() {
   };
   document.querySelectorAll("[data-tab]").forEach(
     (b) =>
-      (b.onclick = () => {
+      (b.onclick = async () => {
         tab = b.dataset.tab;
-        renderAdmin();
+        if (tab === "reports") {
+          try {
+            await loadAdmin();
+          } catch (e) {
+            toast(e.message);
+          }
+        } else renderAdmin();
       }),
   );
   const p = $("#admin-panel");
@@ -399,15 +405,22 @@ function renderAdmin() {
   }
   if (tab === "reports") {
     p.innerHTML =
-      '<h3>Záznamy pripravené na kontrolu</h3><div class="notice">Všetky záznamy sú návrhy AI, bez klinického overenia. Uložené iba na tomto disku.</div>' +
+      '<div class="actions"><h3>Záznamy pripravené na kontrolu</h3><button class="secondary" id="refresh-reports">Obnoviť správy ↻</button></div><div class="notice">Všetky záznamy sú návrhy AI, bez klinického overenia. Zobrazujú sa aj už vytvorené správy čakajúce na potvrdenie pacienta. Uložené iba na tomto disku.</div>' +
       (!adminData.reports.length
-        ? '<div class="empty">Zatiaľ žiadny potvrdený rozhovor.</div>'
+        ? '<div class="empty">Zatiaľ nie je vytvorená žiadna správa.</div>'
         : adminData.reports
             .map(
               (r, i) =>
-                `<details class="record"><summary>${esc(r.patient)} · ${esc(new Date(r.createdAt).toLocaleString("sk-SK"))}${r.urgent ? " · ⚠ VÝSTRAHA" : ""}</summary><small>${esc(r.protocol)} · ${r.coverage.answered}/${r.coverage.total} okruhov · NEOVERENÉ LEKÁROM</small><div class="report">${esc(r.text)}</div>${r.coverage.missing.length ? `<p class="error">Chýba: ${esc(r.coverage.missing.join("; "))}</p>` : ""}<details><summary>Citácie odpovedí pacienta</summary>${r.answers.map((a) => `<p><strong>${esc(a.id)}</strong>: ${esc(a.value)} — „${esc(a.evidence)}“</p>`).join("")}</details><div class="actions"><button class="secondary" data-export="${i}">Stiahnuť text</button><button class="secondary" data-copy="${i}">Kopírovať protokol</button></div></details>`,
+                `<details class="record"><summary>${esc(r.patient)} · ${esc(new Date(r.createdAt).toLocaleString("sk-SK"))}${r.urgent ? " · ⚠ VÝSTRAHA" : ""} · ${r.patientConfirmed ? "Potvrdené pacientom" : "Čaká na potvrdenie pacienta"}</summary><small>${r.patientConfirmed ? "POTVRDENÉ PACIENTOM" : "ČAKÁ NA POTVRDENIE PACIENTA"} · ${esc(r.protocol)} · ${r.coverage.answered}/${r.coverage.total} okruhov · NEOVERENÉ LEKÁROM</small><div class="report">${esc(r.text)}</div>${r.coverage.missing.length ? `<p class="error">Chýba: ${esc(r.coverage.missing.join("; "))}</p>` : ""}<details><summary>Citácie odpovedí pacienta</summary>${r.answers.map((a) => `<p><strong>${esc(a.id)}</strong>: ${esc(a.value)} — „${esc(a.evidence)}“</p>`).join("")}</details><div class="actions"><button class="secondary" data-export="${i}">Stiahnuť text</button><button class="secondary" data-copy="${i}">Kopírovať protokol</button></div></details>`,
             )
             .join(""));
+    $("#refresh-reports").onclick = async () => {
+      try {
+        await loadAdmin();
+      } catch (e) {
+        toast(e.message);
+      }
+    };
     document.querySelectorAll("[data-export]").forEach(
       (b) =>
         (b.onclick = () => {
@@ -453,7 +466,7 @@ function renderAdmin() {
   }
 }
 function reportText(r) {
-  return `AMBULANT — NÁVRH AI NA KONTROLU LEKÁROM\n${r.patient}\n${r.createdAt}\n${r.protocol}\n\n${r.text}\n\nNezodpovedané okruhy: ${r.coverage.missing.join("; ") || "žiadne"}\n`;
+  return `AMBULANT — NÁVRH AI NA KONTROLU LEKÁROM\n${r.patientConfirmed ? "Potvrdené pacientom" : "Čaká na potvrdenie pacienta"}\n${r.patient}\n${r.createdAt}\n${r.protocol}\n\n${r.text}\n\nNezodpovedané okruhy: ${r.coverage.missing.join("; ") || "žiadne"}\n`;
 }
 function protocolEditor(panel) {
   const p = adminData.protocol;
@@ -569,4 +582,8 @@ async function init() {
     home();
   }
 }
+window.addEventListener("focus", () => {
+  if (adminData && tab === "reports")
+    loadAdmin().catch((e) => toast(e.message));
+});
 init();

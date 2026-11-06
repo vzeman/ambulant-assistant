@@ -1,5 +1,6 @@
 import http from "node:http";
-import { readFile, writeFile, mkdir, readdir, rename } from "node:fs/promises";
+import { listDoctorReports, reportFromSession } from "./records.mjs";
+import { readFile, writeFile, mkdir, rename } from "node:fs/promises";
 import {
   randomBytes,
   scryptSync,
@@ -126,11 +127,15 @@ async function turn(s, text, finalize = false) {
     s.messages = [...messages, { role: "assistant", text: result.reply }];
     s.result = result;
     if (finalize) {
+      s.reportPreparedAt = new Date().toISOString();
       const missing = coverage(s.protocol, result.answers).missing;
       s.draft = missing.length
         ? `NEÚPLNÝ ROZHOVOR – UKONČENÝ PACIENTOM\nSpráva vychádza z doterajších odpovedí. Nezodpovedané otázky nie sú negatívnym nálezom.\n\n${result.report}\n\nNezodpovedané okruhy:\n${missing.map((q) => "• " + q).join("\n")}`
         : result.report;
-    } else s.draft = null;
+    } else {
+      s.draft = null;
+      s.reportPreparedAt = null;
+    }
     await save(path.join(data, "sessions", s.id + ".json"), {
       ...s,
       busy: false,
@@ -262,32 +267,25 @@ const server = http.createServer(async (req, res) => {
       const s = session(req);
       if (s.busy) throw Error("Počkajte na dokončenie AI.");
       if (!s.draft) throw Error("Najprv pripravte záznam.");
-      const report = {
-        id: s.id,
-        patient: s.patient.name,
-        createdAt: new Date().toISOString(),
-        protocol: s.protocol.title,
-        text: s.draft,
-        coverage: coverage(s.protocol, s.result.answers),
-        answers: s.result.answers,
-        urgent: s.result.urgent,
-        doctorReviewed: false,
-      };
-      await save(path.join(data, "reports", s.id + ".json"), report);
-      s.saved = true;
+      if (!s.saved) {
+        const report = reportFromSession(s, { confirmed: true });
+        await save(path.join(data, "reports", s.id + ".json"), report);
+        await save(path.join(data, "sessions", s.id + ".json"), {
+          ...s,
+          saved: true,
+          busy: false,
+        });
+        s.saved = true;
+      }
       return send(res, 200, { ok: true, id: s.id });
     }
     if (route === "/api/admin" && req.method === "GET") {
       requireAdmin(req);
-      const reports = await Promise.all(
-        (await readdir(path.join(data, "reports")))
-          .filter((n) => n.endsWith(".json"))
-          .map((n) => json(path.join(data, "reports", n))),
-      );
+      const reports = await listDoctorReports(data);
       return send(res, 200, {
         patient: await json(path.join(data, "patient.json")),
         protocol: await json(path.join(data, "protocol.json")),
-        reports: reports.sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+        reports,
       });
     }
     if (route === "/api/protocol" && req.method === "PUT") {

@@ -1,7 +1,7 @@
 # Overenie MVP (6. 11. 2026)
 
 - Syntax servera a klienta: `npm run check` prešlo.
-- Štrnásť automatických testov vrátane štyroch testov slovenského hlasu: vetvenie kašľa, validácia protokolu, kontrola doslovných citácií, HTTP autentifikácia/ochrana pôvodu a perzistencia protokolu.
+- Pätnásť automatických testov vrátane štyroch testov slovenského hlasu: vetvenie kašľa, validácia protokolu, kontrola doslovných citácií, HTTP autentifikácia/ochrana pôvodu a perzistencia protokolu.
 - Skutočné volanie Codex CLI s existujúcim ChatGPT prihlásením: úspešné.
 - Ručne v lokálnom prehliadači: súhlas → úvod so znalosťou astmy z histórie → voľný opis príznakov → doplňujúce otázky → odborný protokol → potvrdenie → uložený záznam dostupný po PIN-e v časti lekára.
 - Výstup odlíšil historickú dokumentáciu od dnešných tvrdení a uviedol neoverené údaje (napr. cetirizín a sila inhalátora).
@@ -25,3 +25,7 @@ Regresné testy pokrývajú zachovanie pôvodného textu pacienta vrátane chýb
 HTTP regresný test overuje ukončenie bez jedinej odpovede, zahrnutie rozpracovanej poslednej odpovede, označenie neúplného záznamu, zoznam chýbajúcich okruhov a potvrdené uloženie správy na disk. Používa iba syntetický CLI adaptér a dočasný adresár.
 
 Živá skúška v prehliadači: po úvode bol do poľa napísaný nový fiktívny údaj o pravidelnej kontrole bez jeho samostatného odoslania. Tlačidlo ukončenia ho zahrnulo do správy a Codex vytvoril neúplný odborný záznam s chýbajúcimi okruhmi.
+
+## Viditeľnosť správ lekárovi
+
+HTTP test kontroluje, že vygenerovaná správa je dostupná autentifikovanému lekárovi už pred potvrdením pacienta a má správny stav. Po potvrdení sa zobrazí iba raz, stav sa zmení a potvrdenie sa zapíše aj do súboru rozhovoru. Samostatný test obnovuje staršie návrhy zo súborov bez ich opätovného generovania a uprednostňuje potvrdený protokol pred starším návrhom s rovnakým ID.
