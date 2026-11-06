@@ -35,6 +35,9 @@ test("server protects clinician data, validates origin, and persists protocol", 
         body: data ? JSON.stringify(data) : undefined,
       });
     assert.equal((await request("/")).status, 200);
+    const voiceModule = await request("/slovak-voice.js");
+    assert.equal(voiceModule.status, 200);
+    assert.match(voiceModule.headers.get("content-type"), /javascript/);
     assert.equal((await request("/api/admin")).status, 401);
     assert.equal((await request("/data/patient.json")).status, 404);
     assert.equal(

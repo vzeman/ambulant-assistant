@@ -1,3 +1,5 @@
+import { loadSlovakVoice } from "./slovak-voice.js";
+
 const $ = (s) => document.querySelector(s),
   app = $("#app");
 const esc = (s) =>
@@ -17,7 +19,8 @@ let state = null,
   listening = false,
   adminData = null,
   tab = "history",
-  speaking = false;
+  speaking = false,
+  voiceRevision = 0;
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 async function api(url, method = "GET", data) {
@@ -89,7 +92,7 @@ function home() {
   };
 }
 function voiceSettings() {
-  return `<div class="voice-info"><label><input type="checkbox" id="voice-consent" ${voiceConsent ? "checked" : ""}><span>Povoliť hlas: rozpoznávanie reči môže posielať zvuk poskytovateľovi prehliadača. Dostupnosť slovenčiny závisí od prehliadača a systému.</span></label><label><input type="checkbox" id="handsfree" ${handsfree ? "checked" : ""} ${!voiceConsent || !SpeechRecognition ? "disabled" : ""}><span>Hlasový rozhovor: po odpovedi asistenta automaticky počúvať a odoslať reč.</span></label></div>`;
+  return `<div class="voice-info"><label><input type="checkbox" id="voice-consent" ${voiceConsent ? "checked" : ""}><span>Povoliť hlas: rozpoznávanie reči môže posielať zvuk poskytovateľovi prehliadača. Čítanie odpovedí používa iba slovenský hlas. Jeho dostupnosť závisí od prehliadača a systému.</span></label><label><input type="checkbox" id="handsfree" ${handsfree ? "checked" : ""} ${!voiceConsent || !SpeechRecognition ? "disabled" : ""}><span>Hlasový rozhovor: po odpovedi asistenta automaticky počúvať a odoslať reč.</span></label></div>`;
 }
 function chat() {
   const c = state.coverage;
@@ -269,6 +272,7 @@ function success() {
   $("#new").onclick = home;
 }
 function stopVoice() {
+  voiceRevision++;
   if (recognition) {
     recognition.onend = null;
     recognition.abort();
@@ -279,17 +283,27 @@ function stopVoice() {
   window.speechSynthesis?.cancel();
   $("#mic")?.classList.remove("listening");
 }
-function speak(text) {
+async function speak(text) {
   if (!voiceConsent || !window.speechSynthesis) return;
   stopVoice();
+  const revision = voiceRevision;
+  const slovakVoice = await loadSlovakVoice(speechSynthesis);
+  if (revision !== voiceRevision || !voiceConsent) return;
+  if (!slovakVoice) {
+    voice = false;
+    handsfree = false;
+    if ($("#voice")) $("#voice").textContent = "◎ Zapnúť hlas";
+    if ($("#handsfree")) $("#handsfree").checked = false;
+    const message =
+      "Slovenský hlas nie je dostupný. Pridajte si slovenský hlas v nastaveniach reči systému alebo použite prehliadač, ktorý ho ponúka. Odpovedať môžete aj písaním.";
+    if ($("#chat-status")) $("#chat-status").textContent = message;
+    toast(message);
+    return;
+  }
   const u = new SpeechSynthesisUtterance(text);
-  const voices = speechSynthesis.getVoices();
-  u.voice =
-    voices.find((v) => v.lang.startsWith("sk")) ||
-    voices.find((v) => v.lang.startsWith("cs")) ||
-    null;
-  u.lang = u.voice?.lang || "sk-SK";
-  u.rate = 0.92;
+  u.voice = slovakVoice;
+  u.lang = "sk-SK";
+  u.rate = 0.95;
   speaking = true;
   u.onend = () => {
     speaking = false;

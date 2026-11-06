@@ -43,7 +43,7 @@ Záznamy sa ukladajú lokálne, **spracovanie AI nie je offline**. Text rozhovor
 
 Backend spúšťa `codex exec` bez shell interpolácie; prompt ide cez stdin. Ignoruje používateľský config a execpolicy pravidlá, nenačítava používateľské MCP servery, má read-only sandbox, zakázaný shell a web search, dočasné relácie (`--ephemeral`) a JSON schému. API key premenné sa do procesu neposielajú. Pri neplatnom výstupe či výpadku sa zobrazí chyba a odpoveď pacienta zostane v poli; aplikácia nepredstiera úspech. Citácie každého zachyteného okruhu sa kontrolujú oproti správam pacienta. Samotná správnosť klinického zhrnutia zostáva predmetom kontroly lekárom.
 
-Rozpoznávanie reči používa Web Speech API a môže posielať zvuk poskytovateľovi prehliadača; aplikácia nenahráva a neukladá zvuk. Čítanie používa `speechSynthesis` a dostupný slovenský alebo český hlas. Hlasové funkcie nie sú garantované na každom prehliadači. Nie je použitá platená hlasová API služba.
+Rozpoznávanie reči používa Web Speech API a môže posielať zvuk poskytovateľovi prehliadača; aplikácia nenahráva a neukladá zvuk. Čítanie používa `speechSynthesis` a výhradne dostupný slovenský hlas (sk-SK); český ani iný náhradný hlas sa nepoužije. Ak sa katalóg hlasov načíta oneskorene, aplikácia naň krátko počká. Ak slovenský hlas chýba, zobrazí vysvetlenie a zostane textový režim. Hlasové funkcie nie sú garantované na každom prehliadači. Nie je použitá platená hlasová API služba.
 
 **Iba demonštrácia s vymyslenými údajmi.** Nie je to zdravotnícka pomôcka ani hotové riešenie na spracovanie skutočných zdravotných údajov. Neurčuje diagnózu, liečbu, triedenie pacientov ani bezpečnosť čakania. Detekcia výstrah AI nemusí zachytiť všetky urgentné stavy. Pri závažných ťažkostiach treba okamžite privolať zdravotnícky personál; pri ohrození života 155/112. Ukážkový protokol musí pred reálnym použitím schváliť lekár.
 
@@ -62,3 +62,7 @@ Architektúra: `server.mjs` (HTTP, relácie, autorizácia, disk), `core.mjs` (Co
 ## Ďalšie kroky
 
 Klinická validácia protokolu, produkčné riadenie zdravotných údajov a súhlasov, šifrovanie a retencia, viac pacientov, systémový kiosk, kvalitnejší lokálny hlasový vstup/výstup a explicitne nakonfigurovaný e-mailový export sú nad rámec MVP.
+
+## Slovenčina
+
+`slovak-style.mjs` definuje jazyk pre každý AI krok vrátane existujúcich rozhovorov: prirodzená spisovná slovenčina, jednoduché otázky po jednej, primerané vykanie, ukážky formulácií a jazyková kontrola pred odpoveďou. Záznam pre lekára používa odborný register. Jazyková úprava nesmie meniť medicínsky význam ani doslovné citácie pacienta. [Odporúčania k pokynom a príkladom](https://developers.openai.com/api/docs/guides/prompt-engineering).

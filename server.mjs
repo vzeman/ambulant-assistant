@@ -300,6 +300,7 @@ const server = http.createServer(async (req, res) => {
     const staticFiles = {
       "/": "index.html",
       "/app.js": "app.js",
+      "/slovak-voice.js": "slovak-voice.js",
       "/style.css": "style.css",
     };
     if (req.method === "GET" && staticFiles[route]) {

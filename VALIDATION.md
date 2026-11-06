@@ -1,7 +1,7 @@
 # Overenie MVP (6. 11. 2026)
 
 - Syntax servera a klienta: `npm run check` prešlo.
-- Štyri automatické testy: vetvenie kašľa, validácia protokolu, kontrola doslovných citácií, HTTP autentifikácia/ochrana pôvodu a perzistencia protokolu.
+- Osem automatických testov vrátane štyroch testov slovenského hlasu: vetvenie kašľa, validácia protokolu, kontrola doslovných citácií, HTTP autentifikácia/ochrana pôvodu a perzistencia protokolu.
 - Skutočné volanie Codex CLI s existujúcim ChatGPT prihlásením: úspešné.
 - Ručne v lokálnom prehliadači: súhlas → úvod so znalosťou astmy z histórie → voľný opis príznakov → doplňujúce otázky → odborný protokol → potvrdenie → uložený záznam dostupný po PIN-e v časti lekára.
 - Výstup odlíšil historickú dokumentáciu od dnešných tvrdení a uviedol neoverené údaje (napr. cetirizín a sila inhalátora).
@@ -9,3 +9,7 @@
 - Hlasový vstup, systémové hlasy a hands-free správanie závisia od konkrétneho prehliadača a povolenia mikrofónu. Skutočný zvukový rozhovor s mikrofónom nebol pri tomto overení otestovaný. Pri nefunkčnom rozpoznávaní sa dá použiť text alebo diktovanie systému.
 
 Overenie je funkčný test prototypu; nejde o klinickú validáciu ani bezpečnostný audit.
+
+## Úprava slovenčiny
+
+Živý test Codexu s fiktívnou odpoveďou bez diakritiky vytvoril prirodzenú slovenskú otázku („Chápem, že vás kašeľ znepokojuje. Zmenil sa za tie tri dni, alebo je stále rovnaký?“) a samostatný odborný slovenský záznam. Chýbajúce údaje zostali označené ako chýbajúce a doslovné citácie prešli existujúcou kontrolou. Automatické testy overujú výber slovenského hlasu, odmietnutie českého hlasu, oneskorené načítanie aj nedostupnosť slovenského hlasu. Kvalita skutočného hlasového prednesu cez mikrofón/reproduktory zostáva závislá od nainštalovaného hlasu a nebola týmto testom posúdená.
