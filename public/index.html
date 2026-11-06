@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="sk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#174f49" />
+    <title>Ambulant — priestor pre váš príbeh</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <dialog id="login">
+      <form id="login-form">
+        <button
+          class="close"
+          type="button"
+          id="close-login"
+          aria-label="Zavrieť"
+        >
+          ×
+        </button>
+        <div class="eyebrow">VSTUP PRE LEKÁRA</div>
+        <h2>Vaša ambulancia</h2>
+        <p>Na otvorenie dokumentácie zadajte svoj PIN.</p>
+        <label for="pin">Prístupový PIN</label
+        ><input
+          id="pin"
+          type="password"
+          inputmode="numeric"
+          autocomplete="current-password"
+          required
+          maxlength="12"
+        />
+        <p class="error" id="login-error" role="alert"></p>
+        <button class="primary" type="submit">Odomknúť pracovisko →</button>
+      </form>
+    </dialog>
+    <div id="toast" role="status"></div>
+  </body>
+</html>

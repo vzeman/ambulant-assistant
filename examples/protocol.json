@@ -1,0 +1,81 @@
+{
+  "title": "Pneumologická kontrola",
+  "instructions": "Priateľsky vykaj. Pýtaj sa po jednej otázke, stručne a bez žargónu. Nadviaž na astmu z histórie, ale over dnešný stav. Ak pacient nechce odpovedať, rešpektuj to a označ pre osobný rozhovor. Nelieč, neurčuj diagnózu ani dávkovanie. Pri aktuálnych závažných ťažkostiach preruš bežný rozhovor a vyzvi privolať personál; pri bezprostrednom ohrození 112/155. Nepovažuj kašeľ či astmu automaticky za urgentný stav.",
+  "questions": [
+    {
+      "id": "reason",
+      "label": "Čo vás dnes privádza a ako sa cítite?",
+      "choices": [],
+      "when": null
+    },
+    {
+      "id": "onset",
+      "label": "Odkedy ťažkosti trvajú a ako sa menia?",
+      "choices": [],
+      "when": null
+    },
+    {
+      "id": "cough",
+      "label": "Trápi vás v poslednom čase kašeľ?",
+      "choices": ["Áno", "Nie", "Chcem prebrať osobne"],
+      "when": null
+    },
+    {
+      "id": "cough_type",
+      "label": "Je kašeľ suchý alebo vykašliavate? Ak vykašliavate, aký je hlien?",
+      "choices": ["Suchý kašeľ", "Vykašliavam hlien", "Chcem prebrať osobne"],
+      "when": { "id": "cough", "equals": "yes" }
+    },
+    {
+      "id": "breathing",
+      "label": "Máte dýchavicu, pískanie pri dýchaní alebo budenie v noci?",
+      "choices": ["Nie", "Pri námahe", "Aj v pokoji", "Chcem prebrať osobne"],
+      "when": null
+    },
+    {
+      "id": "red_flags",
+      "label": "Máte teraz výrazné problémy s dýchaním, bolesť na hrudníku, vykašliavate krv alebo odpadávate?",
+      "choices": ["Nie", "Áno", "Chcem prebrať osobne"],
+      "when": null
+    },
+    {
+      "id": "infection",
+      "label": "Mali ste horúčku alebo nedávno infekciu?",
+      "choices": ["Nie", "Áno", "Chcem prebrať osobne"],
+      "when": null
+    },
+    {
+      "id": "medication",
+      "label": "Aké lieky a inhalátory teraz užívate, ako často a pomáhajú vám?",
+      "choices": [],
+      "when": null
+    },
+    {
+      "id": "allergies",
+      "label": "Zmenili sa vaše alergie alebo ste mali reakciu na liek?",
+      "choices": ["Bez zmeny", "Áno, zmenili", "Chcem prebrať osobne"],
+      "when": null
+    },
+    {
+      "id": "exposure",
+      "label": "Fajčíte alebo ste vystavený dymu, prachu či iným spúšťačom?",
+      "choices": [],
+      "when": null
+    },
+    {
+      "id": "other",
+      "label": "Je ešte niečo, čo chcete povedať lekárovi?",
+      "choices": ["To je všetko", "Áno", "Chcem prebrať osobne"],
+      "when": null
+    }
+  ],
+  "reportSections": [
+    "Dôvod návštevy a terajšie ťažkosti",
+    "Respiračné príznaky a časový priebeh",
+    "Varovné príznaky podľa vyjadrenia pacienta",
+    "Aktuálna liečba a adherencia",
+    "Alergie a expozície",
+    "Relevantná dokumentovaná anamnéza",
+    "Nezodpovedané otázky a témy na osobný rozhovor"
+  ]
+}

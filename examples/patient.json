@@ -1,0 +1,22 @@
+{
+  "id": "demo-001",
+  "fictional": true,
+  "name": "Martin Ukážkový",
+  "birthYear": 1978,
+  "history": [
+    {
+      "date": "2025-05-14",
+      "note": "Fiktívna pneumologická kontrola. Bronchiálna astma, alergická rinitída. Bez exacerbácie. Nefajčiar."
+    },
+    {
+      "date": "2026-04-09",
+      "note": "Občasný suchý kašeľ na jar. Pacient udáva dobrý efekt udržiavacej inhalačnej liečby. Kontrola o 6 mesiacov."
+    }
+  ],
+  "medications": [
+    "Budezonid/formoterol inhalačne – dávkovanie overiť pri rozhovore",
+    "Cetirizín podľa potreby"
+  ],
+  "allergies": ["Peľ tráv (anamnesticky)"],
+  "context": "Všetky údaje sú vymyslené. Dnes ide o kontrolu v pneumologickej ambulancii. Historické údaje nie sú dnešné tvrdenia pacienta."
+}
