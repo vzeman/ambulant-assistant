@@ -110,7 +110,7 @@ async function turn(s, text, finalize = false) {
   if (s.saved) throw Error("Rozhovor je už uložený. Začnite nový.");
   if (s.result?.urgent && !finalize)
     throw Error("Rozhovor je prerušený. Privolajte personál.");
-  if (s.messages.length > 100)
+  if (!finalize && s.messages.length > 100)
     throw Error("Dosiahli ste limit rozhovoru. Pripravte záznam.");
   s.busy = true;
   try {
@@ -121,12 +121,15 @@ async function turn(s, text, finalize = false) {
       { patient: s.patient, protocol: s.protocol, messages, finalize },
       path.join(data, "runtime"),
     );
+    if (finalize && !result.report.trim())
+      throw Error("AI nevytvorila protokol. Skúste znova.");
     s.messages = [...messages, { role: "assistant", text: result.reply }];
     s.result = result;
     if (finalize) {
-      if (!result.report.trim())
-        throw Error("AI nevytvorila protokol. Skúste znova.");
-      s.draft = result.report;
+      const missing = coverage(s.protocol, result.answers).missing;
+      s.draft = missing.length
+        ? `NEÚPLNÝ ROZHOVOR – UKONČENÝ PACIENTOM\nSpráva vychádza z doterajších odpovedí. Nezodpovedané otázky nie sú negatívnym nálezom.\n\n${result.report}\n\nNezodpovedané okruhy:\n${missing.map((q) => "• " + q).join("\n")}`
+        : result.report;
     } else s.draft = null;
     await save(path.join(data, "sessions", s.id + ".json"), {
       ...s,
@@ -242,8 +245,19 @@ const server = http.createServer(async (req, res) => {
         throw Error("Napíšte odpoveď do 4 000 znakov.");
       return send(res, 200, await turn(session(req), b.text.trim()));
     }
-    if (route === "/api/prepare" && req.method === "POST")
-      return send(res, 200, await turn(session(req), null, true));
+    if (route === "/api/prepare" && req.method === "POST") {
+      const b = await body(req);
+      if (
+        b.text !== undefined &&
+        (typeof b.text !== "string" || b.text.length > 4000)
+      )
+        throw Error("Odpoveď môže obsahovať najviac 4 000 znakov.");
+      return send(
+        res,
+        200,
+        await turn(session(req), b.text?.trim() || null, true),
+      );
+    }
     if (route === "/api/confirm" && req.method === "POST") {
       const s = session(req);
       if (s.busy) throw Error("Počkajte na dokončenie AI.");

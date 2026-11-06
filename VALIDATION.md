@@ -1,7 +1,7 @@
 # Overenie MVP (6. 11. 2026)
 
 - Syntax servera a klienta: `npm run check` prešlo.
-- Trinásť automatických testov vrátane štyroch testov slovenského hlasu: vetvenie kašľa, validácia protokolu, kontrola doslovných citácií, HTTP autentifikácia/ochrana pôvodu a perzistencia protokolu.
+- Štrnásť automatických testov vrátane štyroch testov slovenského hlasu: vetvenie kašľa, validácia protokolu, kontrola doslovných citácií, HTTP autentifikácia/ochrana pôvodu a perzistencia protokolu.
 - Skutočné volanie Codex CLI s existujúcim ChatGPT prihlásením: úspešné.
 - Ručne v lokálnom prehliadači: súhlas → úvod so znalosťou astmy z histórie → voľný opis príznakov → doplňujúce otázky → odborný protokol → potvrdenie → uložený záznam dostupný po PIN-e v časti lekára.
 - Výstup odlíšil historickú dokumentáciu od dnešných tvrdení a uviedol neoverené údaje (napr. cetirizín a sila inhalátora).
@@ -19,3 +19,9 @@ Overenie je funkčný test prototypu; nejde o klinickú validáciu ani bezpečno
 Regresné testy pokrývajú zachovanie pôvodného textu pacienta vrátane chýb a negácií, odmietnutie neexistujúceho zdroja a správ asistenta, neplatné a duplicitné otázky, parsovanie JSON výstupu a automatickú opravu neplatného odkazu jedným opakovaním. Syntetický CLI adaptér pri prvom pokuse úmyselne vráti nesprávny odkaz; druhý pokus musí priniesť platné citácie. Žiadne uložené rozhovory sa v týchto testoch neposielajú poskytovateľovi AI.
 
 Živá regresná skúška cez Codex úspešne prešla úvodom, tromi po sebe idúcimi syntetickými odpoveďami pacienta aj vytvorením odborného protokolu. Vstupy boli vytvorené osobitne na tento test; uložené pacientske rozhovory sa nepoužili.
+
+## Dobrovoľné ukončenie rozhovoru
+
+HTTP regresný test overuje ukončenie bez jedinej odpovede, zahrnutie rozpracovanej poslednej odpovede, označenie neúplného záznamu, zoznam chýbajúcich okruhov a potvrdené uloženie správy na disk. Používa iba syntetický CLI adaptér a dočasný adresár.
+
+Živá skúška v prehliadači: po úvode bol do poľa napísaný nový fiktívny údaj o pravidelnej kontrole bez jeho samostatného odoslania. Tlačidlo ukončenia ho zahrnulo do správy a Codex vytvoril neúplný odborný záznam s chýbajúcimi okruhmi.

@@ -21,6 +21,7 @@ Lokálne slovenské MVP asistenta pred návštevou ambulantného špecialistu. P
 - Skúste napríklad: „Posledné tri dni mám suchý kašeľ, hlavne večer. Pri chôdzi do kopca sa viac zadýcham.“
 - Hlas: povoľte voliteľné hlasové funkcie pod chatom, zapnite hlas a použite mikrofón. Bežne sa prepis pred odoslaním dá skontrolovať. Vo voľbe „Hlasový rozhovor“ asistent po dohovorení začne počúvať a rozpoznanú reč odošle automaticky. Prehliadač môže automatické počúvanie zablokovať; potom použite tlačidlo mikrofónu. V nepodporovanom prehliadači môžete použiť systémové diktovanie macOS do textového poľa.
 - Hlasové príkazy „Pripraviť záznam“, v náhľade „Uložiť záznam“ alebo „Doplniť odpovede“ umožnia dokončiť rozhovor aj bez písania.
+- Rozhovor môžete kedykoľvek ukončiť výrazným tlačidlom „Ukončiť rozhovor a pripraviť správu“ alebo rovnakým hlasovým príkazom. Netreba odpovedať na všetky otázky. Prípadná neodoslaná odpoveď v textovom poli sa zahrnie do správy. Neúplný rozhovor je označený a správa obsahuje zoznam nezodpovedaných okruhov.
 - Ukončite rozhovor a pripravte záznam. Prečítajte si náhľad, prípadne doplňte odpovede a potvrďte uloženie.
 - Lekár po zadaní PIN-u nájde text v Záznamoch; môže ho skopírovať alebo stiahnuť ako `.txt`. E-mail sa v tomto MVP neodosiela.
 

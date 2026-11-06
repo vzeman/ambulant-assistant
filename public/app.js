@@ -99,7 +99,7 @@ function chat() {
   const complete = c.answered >= c.total;
   app.innerHTML =
     header() +
-    `<main class="layout">${sidebar(2)}<section><div class="card"><div class="chat-head"><div class="chat-person"><div class="avatar">✳</div><div><strong>Váš asistent</strong><small>Pred návštevou · pneumológia</small></div></div><div class="chat-controls"><button id="voice">${voice ? "◉ Hlas zapnutý" : "◎ Zapnúť hlas"}</button><button id="repeat" aria-label="Zopakovať poslednú odpoveď">↻ Prečítať</button></div></div><div class="progress"><div class="progress-inner" id="progress"></div></div><div class="transcript" aria-live="polite" aria-relevant="additions">${state.messages.map((m) => `<div class="message ${m.role === "user" ? "user" : ""}"><div class="message-label">${m.role === "user" ? "VY" : "AMBULANT"}</div><div class="bubble">${esc(m.text)}</div></div>`).join("")}</div>${state.urgent ? '<div class="urgent" role="alert"><strong>Privolajte zdravotnícky personál.</strong><br>Rozhovor je prerušený. Pri bezprostrednom ohrození volajte 155 alebo 112.</div>' : `<div class="choices">${[...new Set(state.choices)].map((x) => `<button class="choice" data-choice="${esc(x)}">${esc(x)}</button>`).join("")}${state.choices.some((x) => /prebrať osobne/i.test(x)) ? "" : '<button class="choice" data-choice="Chcem prebrať osobne">Prebrať osobne</button>'}</div>`}<div class="status-line" role="status" id="chat-status">${complete ? "Zachytené sú všetky okruhy; asistent môže doplniť detaily." : `${c.answered} z ${c.total} okruhov zachytených · môžete doplniť čokoľvek`}</div>${!state.urgent ? `<form class="composer" id="message-form"><label class="eyebrow" for="message">VAŠA ODPOVEĎ</label><div class="input-row"><textarea id="message" placeholder="Napíšte, ako sa cítite…" rows="1" maxlength="4000" required></textarea><button class="mic" id="mic" type="button" aria-label="Začať alebo zastaviť nahrávanie" ${!SpeechRecognition ? "disabled" : ""}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11v1a6 6 0 0 0 12 0v-1M12 18v3M9 21h6"/></svg></button><button class="primary send" type="submit" aria-label="Odoslať odpoveď">↑</button></div><div class="composer-foot"><span>${SpeechRecognition ? "Hlasový príkaz: „Pripraviť záznam“." : "Prehliadač nepodporuje rozpoznávanie. Skúste Chrome alebo diktovanie macOS (Fn). "}</span><button type="button" class="text-button" id="prepare">${complete ? "Pripraviť záznam →" : "Ukončiť a pripraviť záznam"}</button></div></form>` : '<div class="composer"><button class="secondary" id="prepare">Pripraviť záznam pre personál →</button></div>'}${voiceSettings()}</div><div class="bottom-caption">✧ Odpovedá Codex cez váš ChatGPT účet. Každú odpoveď spracúva AI.</div></section></main>` +
+    `<main class="layout">${sidebar(2)}<section><div class="card"><div class="chat-head"><div class="chat-person"><div class="avatar">✳</div><div><strong>Váš asistent</strong><small>Pred návštevou · pneumológia</small></div></div><div class="chat-controls"><button id="voice">${voice ? "◉ Hlas zapnutý" : "◎ Zapnúť hlas"}</button><button id="repeat" aria-label="Zopakovať poslednú odpoveď">↻ Prečítať</button></div></div><div class="progress"><div class="progress-inner" id="progress"></div></div><div class="transcript" aria-live="polite" aria-relevant="additions">${state.messages.map((m) => `<div class="message ${m.role === "user" ? "user" : ""}"><div class="message-label">${m.role === "user" ? "VY" : "AMBULANT"}</div><div class="bubble">${esc(m.text)}</div></div>`).join("")}</div>${state.urgent ? '<div class="urgent" role="alert"><strong>Privolajte zdravotnícky personál.</strong><br>Rozhovor je prerušený. Pri bezprostrednom ohrození volajte 155 alebo 112.</div>' : `<div class="choices">${[...new Set(state.choices)].map((x) => `<button class="choice" data-choice="${esc(x)}">${esc(x)}</button>`).join("")}${state.choices.some((x) => /prebrať osobne/i.test(x)) ? "" : '<button class="choice" data-choice="Chcem prebrať osobne">Prebrať osobne</button>'}</div>`}<div class="status-line" role="status" id="chat-status">${complete ? "Zachytené sú všetky okruhy; asistent môže doplniť detaily." : `${c.answered} z ${c.total} okruhov zachytených · môžete doplniť čokoľvek`}</div>${!state.urgent ? `<form class="composer" id="message-form"><label class="eyebrow" for="message">VAŠA ODPOVEĎ</label><div class="input-row"><textarea id="message" placeholder="Napíšte, ako sa cítite…" rows="1" maxlength="4000" required></textarea><button class="mic" id="mic" type="button" aria-label="Začať alebo zastaviť nahrávanie" ${!SpeechRecognition ? "disabled" : ""}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11v1a6 6 0 0 0 12 0v-1M12 18v3M9 21h6"/></svg></button><button class="primary send" type="submit" aria-label="Odoslať odpoveď">↑</button></div><div class="composer-foot"><span>${SpeechRecognition ? "Hlasom môžete povedať aj „Ukončiť rozhovor“." : "Prehliadač nepodporuje rozpoznávanie. Skúste Chrome alebo diktovanie macOS (Fn). "}</span></div></form>` : ""}<div class="finish-conversation"><button type="button" class="primary" id="prepare">${state.urgent ? "Pripraviť správu pre personál" : "Ukončiť rozhovor a pripraviť správu"} →</button><p>Rozhovor môžete ukončiť kedykoľvek. Lekár dostane aj informáciu o tom, na ktoré otázky ste neodpovedali.</p></div>${voiceSettings()}</div><div class="bottom-caption">✧ Odpovedá Codex cez váš ChatGPT účet. Každú odpoveď spracúva AI.</div></section></main>` +
     footer();
   bindHeader();
   $("#progress").style.width = (100 * c.answered) / c.total + "%";
@@ -160,7 +160,9 @@ function chat() {
 function setBusy(value, label = "Asistent premýšľa…") {
   busy = value;
   document
-    .querySelectorAll(".choices button,.composer button,.composer textarea")
+    .querySelectorAll(
+      ".choices button,.composer button,.composer textarea,.finish-conversation button",
+    )
     .forEach((b) => (b.disabled = value));
   if ($("#chat-status"))
     $("#chat-status").textContent = value
@@ -198,7 +200,13 @@ async function submit(text) {
     toast("Povedzte „uložiť záznam“ alebo „doplniť odpovede“.");
     return;
   }
-  if (/^(prosim )?(pripravit|pripravte|priprav) zaznam$/.test(cmd)) {
+  if (
+    /^(?:(?:prosim )?(?:pripravit|pripravte|priprav) (?:zaznam|spravu)|(?:chcem )?(?:ukoncit|ukoncite|ukonci|skoncit) rozhovor(?: a pripravit spravu)?)$/.test(
+      cmd,
+    )
+  ) {
+    if ($("#message") && command($("#message").value) === cmd)
+      $("#message").value = "";
     await prepare();
     return;
   }
@@ -220,7 +228,8 @@ async function prepare() {
   stopVoice();
   setBusy(true, "Pripravujeme odborný záznam pre lekára…");
   try {
-    state = await api("prepare", "POST");
+    const text = $("#message")?.value.trim();
+    state = await api("prepare", "POST", text ? { text } : {});
     busy = false;
     review();
     if (voice)
@@ -235,7 +244,7 @@ async function prepare() {
 function review() {
   app.innerHTML =
     header() +
-    `<main class="layout">${sidebar(3)}<section class="card review"><div class="eyebrow">ZÁZNAM Z ROZHOVORU</div><h2>Všetko podstatné<br>na jednom mieste.</h2><div class="notice">Návrh vytvorený AI. Odbornú správnosť a úplnosť musí skontrolovať lekár. ${state.coverage.missing.length ? `<br><strong>Nezodpovedané okruhy:</strong> ${esc(state.coverage.missing.join("; "))}` : ""}</div><div class="report">${esc(state.report)}</div><div class="actions"><button class="primary" id="confirm">Potvrdiť a uložiť na disk →</button><button class="secondary" id="back">Doplniť odpovede</button><button class="secondary" id="mic" aria-label="Hlasové potvrdenie záznamu">◉ Hlasový príkaz</button></div><p class="fine">Hlasom povedzte „uložiť záznam“ alebo „doplniť odpovede“.</p><p class="fine">Záznam sa neodosiela e-mailom. Bude dostupný lekárovi po zadaní PIN-u.</p></section></main>` +
+    `<main class="layout">${sidebar(3)}<section class="card review"><div class="eyebrow">ZÁZNAM Z ROZHOVORU</div><h2>Všetko podstatné<br>na jednom mieste.</h2><div class="notice">${state.coverage.missing.length ? "<strong>Rozhovor ste ukončili pred zodpovedaním všetkých otázok.</strong><br>Správa obsahuje doterajšie odpovede a zoznam chýbajúcich údajov.<br><br>" : ""}Návrh vytvorený AI. Odbornú správnosť a úplnosť musí skontrolovať lekár. ${state.coverage.missing.length ? `<br><strong>Nezodpovedané okruhy:</strong> ${esc(state.coverage.missing.join("; "))}` : ""}</div><div class="report">${esc(state.report)}</div><div class="actions"><button class="primary" id="confirm">Potvrdiť a uložiť na disk →</button><button class="secondary" id="back">Doplniť odpovede</button><button class="secondary" id="mic" aria-label="Hlasové potvrdenie záznamu">◉ Hlasový príkaz</button></div><p class="fine">Hlasom povedzte „uložiť záznam“ alebo „doplniť odpovede“.</p><p class="fine">Záznam sa neodosiela e-mailom. Bude dostupný lekárovi po zadaní PIN-u.</p></section></main>` +
     footer();
   bindHeader();
   $("#back").onclick = () => {

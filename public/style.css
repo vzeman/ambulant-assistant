@@ -774,3 +774,18 @@ footer {
     padding: 22px;
   }
 }
+
+.finish-conversation {
+  padding: 18px 24px;
+  border-top: 1px solid var(--border);
+  background: #f8f9f3;
+}
+.finish-conversation .primary {
+  width: 100%;
+}
+.finish-conversation p {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
